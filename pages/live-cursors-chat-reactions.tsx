@@ -11,51 +11,6 @@ import FlyingReaction from "../src/FlyingReaction";
 import ReactionSelector from "../src/ReactionSelector";
 import useInterval from "../src/useInterval";
 
-export default function Room() {
-  return (
-    <RoomProvider
-      id="example-live-cursors-chat-reactions"
-      defaultPresence={() => ({
-        cursor: null,
-        message: "",
-      })}
-    >
-      <div className="fixed inset-0 flex justify-center items-center select-none bg-white">
-        <div className="text-center max-w-sm">
-          <h1 className="text-xl">Live Cursors Chat Reactions</h1>
-          <p className="text-sm mt-1 text-gray-600">
-            Open this page in multiple browsers to see the live cursors.
-          </p>
-          <ul className="flex items-center justify-center space-x-2 mt-4">
-            <li className="flex items-center space-x-2 text-sm bg-gray-100 rounded-md py-2 px-3">
-              <span>Reactions</span>
-              <span className="block uppercase font-medium text-xs text-gray-500 rounded border border-gray-300 px-1">
-                E
-              </span>
-            </li>
-
-            <li className="flex items-center space-x-2 text-sm bg-gray-100 rounded-md py-2 px-3">
-              <span>Chat</span>
-              <span className="block uppercase font-medium text-xs text-gray-500 rounded border border-gray-300 px-1">
-                /
-              </span>
-            </li>
-
-            <li className="flex items-center space-x-2 text-sm bg-gray-100 rounded-md py-2 px-3">
-              <span>Escape</span>
-              <span className="block uppercase font-medium text-xs text-gray-500 rounded border border-gray-300 px-1">
-                esc
-              </span>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <LiveCursorsChatReactions />
-    </RoomProvider>
-  );
-}
-
 const COLORS = ["#DC2626", "#D97706", "#059669", "#7C3AED", "#DB2777"];
 
 type Presence = {
@@ -313,5 +268,50 @@ function LiveCursorsChatReactions() {
         })}
       </div>
     </>
+  );
+}
+
+export default function Room() {
+  return (
+    <RoomProvider
+      id="example-live-cursors-chat-reactions"
+      defaultPresence={() => ({
+        cursor: null,
+        message: "",
+      })}
+    >
+      <div className="fixed inset-0 flex justify-center items-center select-none bg-white">
+        <div className="text-center max-w-sm">
+          <h1 className="text-xl">Live Cursors Chat Reactions</h1>
+          <p className="text-sm mt-1 text-gray-600">
+            Open this page in multiple browsers to see the live cursors.
+          </p>
+          <ul className="flex items-center justify-center space-x-2 mt-4">
+            <li className="flex items-center space-x-2 text-sm bg-gray-100 rounded-md py-2 px-3">
+              <span>Reactions</span>
+              <span className="block uppercase font-medium text-xs text-gray-500 rounded border border-gray-300 px-1">
+                E
+              </span>
+            </li>
+
+            <li className="flex items-center space-x-2 text-sm bg-gray-100 rounded-md py-2 px-3">
+              <span>Chat</span>
+              <span className="block uppercase font-medium text-xs text-gray-500 rounded border border-gray-300 px-1">
+                /
+              </span>
+            </li>
+
+            <li className="flex items-center space-x-2 text-sm bg-gray-100 rounded-md py-2 px-3">
+              <span>Escape</span>
+              <span className="block uppercase font-medium text-xs text-gray-500 rounded border border-gray-300 px-1">
+                esc
+              </span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <LiveCursorsChatReactions />
+    </RoomProvider>
   );
 }

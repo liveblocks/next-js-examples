@@ -10,14 +10,6 @@ type Presence = {
   message?: string;
 };
 
-export default function Root() {
-  return (
-    <RoomProvider id="example-window-live-cursors">
-      <Demo />
-    </RoomProvider>
-  );
-}
-
 function Demo() {
   const cursors = useWindowLiveCursors<Presence>();
 
@@ -55,5 +47,13 @@ function Demo() {
         />
       ))}
     </>
+  );
+}
+
+export default function Root() {
+  return (
+    <RoomProvider id="example-window-live-cursors">
+      <Demo />
+    </RoomProvider>
   );
 }

@@ -2,19 +2,6 @@ import React from "react";
 import { useOthers, useMyPresence, RoomProvider } from "@liveblocks/react";
 import Cursor from "../src/Cursor";
 
-export default function Room() {
-  return (
-    <RoomProvider
-      id={"example-presence"}
-      defaultPresence={() => ({
-        cursor: null,
-      })}
-    >
-      <PresenceDemo />
-    </RoomProvider>
-  );
-}
-
 const COLORS = [
   "#E57373",
   "#9575CD",
@@ -75,5 +62,18 @@ function PresenceDemo() {
         );
       })}
     </div>
+  );
+}
+
+export default function Room() {
+  return (
+    <RoomProvider
+      id={"example-presence"}
+      defaultPresence={() => ({
+        cursor: null,
+      })}
+    >
+      <PresenceDemo />
+    </RoomProvider>
   );
 }

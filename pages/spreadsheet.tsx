@@ -20,19 +20,6 @@ type Presence = {
   selectedCell: string | null;
 };
 
-export default function Room() {
-  return (
-    <RoomProvider
-      id="spreadsheet"
-      defaultPresence={() => ({
-        selectedCell: null,
-      })}
-    >
-      <SpreadsheetDemo />
-    </RoomProvider>
-  );
-}
-
 export function SpreadsheetDemo() {
   const others = useOthers<Presence>();
 
@@ -109,5 +96,19 @@ function Cell({ onFocus, id, cellsPresence }: CellProps) {
         outline: `1px solid ${CSSColor}`,
       }}
     />
+  );
+}
+
+
+export default function Room() {
+  return (
+    <RoomProvider
+      id="spreadsheet"
+      defaultPresence={() => ({
+        selectedCell: null,
+      })}
+    >
+      <SpreadsheetDemo />
+    </RoomProvider>
   );
 }
