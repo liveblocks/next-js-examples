@@ -1,9 +1,9 @@
 {
-  "name": "next-todo",
+  "name": "liveblocks-next-js-examples",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3001",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start"
   },
