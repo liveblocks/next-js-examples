@@ -157,7 +157,7 @@ export default function Home({ hasSetupLiveblocksKey }: Props) {
                   </li>
                   <li>Copy your secret key from the administration</li>
                   <li>
-                    Add it as a{" "}
+                    Add a{" "}
                     <a
                       href="https://codesandbox.io/docs/secrets"
                       target="_blank"
@@ -166,6 +166,7 @@ export default function Home({ hasSetupLiveblocksKey }: Props) {
                     >
                       secret key
                     </a>{" "}
+                    named <span className="text-black">LIVEBLOCKS_SECRET_KEY</span>
                     to your CodeSandbox sandbox.
                   </li>
                 </ul>
