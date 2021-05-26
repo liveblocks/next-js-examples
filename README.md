@@ -1,4 +1,4 @@
-# Liveblocks
+# Liveblocks × Next.js
 
 ## Getting started
 
