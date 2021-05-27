@@ -4,15 +4,15 @@ import Head from "next/head";
 export async function getStaticProps() {
   return {
     props: {
-      hasSetupLiveblocksKey: process.env.LIVEBLOCKS_SECRET_KEY != null
-    }
+      hasSetupLiveblocksKey: process.env.LIVEBLOCKS_SECRET_KEY != null,
+    },
   };
 }
 
 function ListItem({
   label,
   description,
-  href
+  href,
 }: {
   label: string;
   description?: string;
@@ -22,7 +22,7 @@ function ListItem({
     <li>
       <a
         href={href}
-        className="group flex justify-between items-center py-2 px-3.5 bg-white shadow-sm hover:shadow focus:shadow rounded-lg"
+        className="group flex justify-between items-center py-2 px-3.5 bg-white shadow-sm hover:shadow focus:shadow rounded-lg text-black"
       >
         <div>
           <h3 className="font-medium">{label}</h3>
@@ -35,6 +35,35 @@ function ListItem({
         <span>&rarr;</span>
       </a>
     </li>
+  );
+}
+
+function SingleLineCodeBlock({ children }: { children: React.ReactNode }) {
+  return (
+    <pre
+      className="relative font-mono bg-black shadow-thin-border-300 rounded-lg my-4 text-sm text-gray-200 pl-6 pt-2"
+      style={{
+        minHeight: "36px",
+        lineHeight: "1.5em",
+        maxWidth: "400px",
+      }}
+    >
+      <code>{children}</code>
+    </pre>
+  );
+}
+
+function InlineCodeBlock({ children }: { children: React.ReactNode }) {
+  return (
+    <pre
+      className="relative inline font-mono bg-black shadow-thin-border-300 rounded-lg my-4 text-sm text-gray-200 p-2"
+      style={{
+        minHeight: "36px",
+        lineHeight: "1.5em",
+      }}
+    >
+      <code>{children}</code>
+    </pre>
   );
 }
 
@@ -128,90 +157,87 @@ export default function Home({ hasSetupLiveblocksKey }: Props) {
               </div>
             </div>
           </>
+        ) : isRunningOnCodeSandbox() ? (
+          <>
+            <p className="mt-12 mb-6">
+              To run{" "}
+              <a href="https://liveblocks.io" target="_blank" rel="noreferrer">
+                Liveblocks
+              </a>{" "}
+              examples on Codesandbox
+            </p>
+            <ul className="list-disc list-inside">
+              <li className="mb-2">
+                Create an account on{" "}
+                <a
+                  href="https://liveblocks.io"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  liveblocks.io
+                </a>
+              </li>
+              <li className="mb-2">
+                Copy your secret key from the administration
+              </li>
+              <li className="mb-2">
+                Add a{" "}
+                <a
+                  href="https://codesandbox.io/docs/secrets"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  secret key
+                </a>{" "}
+                named <InlineCodeBlock>LIVEBLOCKS_SECRET_KEY</InlineCodeBlock>{" "}
+                to your CodeSandbox sandbox.
+              </li>
+              <li className="mb-2">
+                Refresh your browser and you should be good to go!
+              </li>
+            </ul>
+          </>
         ) : (
-          <div className="text-gray-400 mb-4 text-lg">
-            {isRunningOnCodeSandbox() ? (
-              <>
-                <p>
-                  To run{" "}
-                  <a
-                    href="https://liveblocks.io"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-black"
-                  >
-                    Liveblocks
-                  </a>{" "}
-                  examples on Codesandbox
-                </p>
-                <ul className="list-disc list-inside">
-                  <li>
-                    Create an account on{" "}
-                    <a
-                      href="https://liveblocks.io"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      liveblocks.io
-                    </a>
-                  </li>
-                  <li>Copy your secret key from the administration</li>
-                  <li>
-                    Add a{" "}
-                    <a
-                      href="https://codesandbox.io/docs/secrets"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-black"
-                    >
-                      secret key
-                    </a>{" "}
-                    named <span className="text-black">LIVEBLOCKS_SECRET_KEY</span>
-                    to your CodeSandbox sandbox.
-                  </li>
-                </ul>
-              </>
-            ) : (
-              <>
-                <p>
-                  To run{" "}
-                  <a
-                    href="https://liveblocks.io"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-black"
-                  >
-                    Liveblocks
-                  </a>{" "}
-                  examples locally
-                </p>
-                <ul className="list-disc list-inside">
-                  <li>
-                    Run <code>npm i</code> to install all dependencies
-                  </li>
-                  <li>
-                    Create an account on{" "}
-                    <a
-                      href="https://liveblocks.io"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      liveblocks.io
-                    </a>
-                  </li>
-                  <li>Copy your secret key from the administration</li>
-                  <li>
-                    Create a <code>.env.local</code> file and add your
-                    Liveblocks secret key like this{" "}
-                    <code>LIVEBLOCKS_SECRET_KEY=sk_test_yourkey</code>
-                  </li>
-                  <li>
-                    Run <code>npm run dev</code> and you should be good to go
-                  </li>
-                </ul>
-              </>
-            )}
-          </div>
+          <>
+            <p className="mt-12 mb-6">
+              To run{" "}
+              <a href="https://liveblocks.io" target="_blank" rel="noreferrer">
+                Liveblocks
+              </a>{" "}
+              examples locally
+            </p>
+            <ul className="list-disc list-inside">
+              <li className="mb-2">
+                Install all dependencies with{" "}
+                <SingleLineCodeBlock>npm install</SingleLineCodeBlock>
+              </li>
+              <li className="mb-2">
+                Create an account on{" "}
+                <a
+                  href="https://liveblocks.io"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  liveblocks.io
+                </a>
+              </li>
+              <li className="mb-2">
+                Copy your secret key from the administration
+              </li>
+              <li className="mb-2">
+                Create a file named{" "}
+                <InlineCodeBlock>.env.local</InlineCodeBlock> and add your
+                Liveblocks secret as environment variable{" "}
+                <SingleLineCodeBlock>
+                  LIVEBLOCKS_SECRET_KEY=sk_test_yourkey
+                </SingleLineCodeBlock>
+              </li>
+              <li className="mb-2">
+                Run the following command and you should be good to go
+                <SingleLineCodeBlock>npm run dev</SingleLineCodeBlock>
+              </li>
+            </ul>
+          </>
         )}
       </main>
     </div>
