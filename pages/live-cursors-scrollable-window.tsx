@@ -1,7 +1,7 @@
 import { RoomProvider } from "@liveblocks/react";
 import React from "react";
-import Cursor from "../src/Cursor";
-import useWindowLiveCursors from "../src/useWindowLiveCursors";
+import Cursor from "../components/Cursor";
+import useWindowLiveCursors from "../components/useWindowLiveCursors";
 
 const COLORS = ["#DC2626", "#D97706", "#059669", "#7C3AED", "#DB2777"];
 

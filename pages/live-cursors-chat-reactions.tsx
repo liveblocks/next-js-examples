@@ -6,10 +6,10 @@ import {
   useOthers,
 } from "@liveblocks/react";
 import React, { useState, useCallback, useEffect } from "react";
-import Cursor from "../src/CursorWithMessage";
-import FlyingReaction from "../src/FlyingReaction";
-import ReactionSelector from "../src/ReactionSelector";
-import useInterval from "../src/useInterval";
+import Cursor from "../components/CursorWithMessage";
+import FlyingReaction from "../components/FlyingReaction";
+import ReactionSelector from "../components/ReactionSelector";
+import useInterval from "../components/useInterval";
 
 const COLORS = ["#DC2626", "#D97706", "#059669", "#7C3AED", "#DB2777"];
 

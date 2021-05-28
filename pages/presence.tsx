@@ -1,6 +1,6 @@
 import React from "react";
 import { useOthers, useMyPresence, RoomProvider } from "@liveblocks/react";
-import Cursor from "../src/Cursor";
+import Cursor from "../components/Cursor";
 
 const COLORS = [
   "#E57373",

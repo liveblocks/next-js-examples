@@ -1,84 +1,27 @@
 import React from "react";
 import Head from "next/head";
+import ListItem from "../components/ListItem";
+import SingleLineCodeBlock from "../components/SingleLineCodeBlock";
+import InlineCodeBlock from "../components/InlineCodeBlock";
 
 export async function getStaticProps() {
   return {
     props: {
+      isRunningOnCodeSandbox: process.env.CODESANDBOX_SSE != null,
       hasSetupLiveblocksKey: process.env.LIVEBLOCKS_SECRET_KEY != null,
     },
   };
 }
 
-function ListItem({
-  label,
-  description,
-  href,
-}: {
-  label: string;
-  description?: string;
-  href?: string;
-}) {
-  return (
-    <li>
-      <a
-        href={href}
-        className="group flex justify-between items-center py-2 px-3.5 bg-white shadow-sm hover:shadow focus:shadow rounded-lg text-black"
-      >
-        <div>
-          <h3 className="font-medium">{label}</h3>
-
-          {description && (
-            <p className="text-sm text-gray-400">{description}</p>
-          )}
-        </div>
-
-        <span>&rarr;</span>
-      </a>
-    </li>
-  );
-}
-
-function SingleLineCodeBlock({ children }: { children: React.ReactNode }) {
-  return (
-    <pre
-      className="relative font-mono bg-black shadow-thin-border-300 rounded-lg my-4 text-sm text-gray-200 pl-6 pt-2"
-      style={{
-        minHeight: "36px",
-        lineHeight: "1.5em",
-        maxWidth: "400px",
-      }}
-    >
-      <code>{children}</code>
-    </pre>
-  );
-}
-
-function InlineCodeBlock({ children }: { children: React.ReactNode }) {
-  return (
-    <pre
-      className="relative inline font-mono bg-black shadow-thin-border-300 rounded-lg my-4 text-sm text-gray-200 p-2"
-      style={{
-        minHeight: "36px",
-        lineHeight: "1.5em",
-      }}
-    >
-      <code>{children}</code>
-    </pre>
-  );
-}
-
-function isRunningOnCodeSandbox() {
-  return (
-    typeof window !== "undefined" &&
-    window.location.host.endsWith("codesandbox.io")
-  );
-}
-
 type Props = {
   hasSetupLiveblocksKey: boolean;
+  isRunningOnCodeSandbox: boolean;
 };
 
-export default function Home({ hasSetupLiveblocksKey }: Props) {
+export default function Home({
+  hasSetupLiveblocksKey,
+  isRunningOnCodeSandbox,
+}: Props) {
   return (
     <div>
       <Head>
@@ -157,14 +100,14 @@ export default function Home({ hasSetupLiveblocksKey }: Props) {
               </div>
             </div>
           </>
-        ) : isRunningOnCodeSandbox() ? (
+        ) : isRunningOnCodeSandbox ? (
           <>
             <p className="mt-12 mb-6">
               To run{" "}
               <a href="https://liveblocks.io" target="_blank" rel="noreferrer">
                 Liveblocks
               </a>{" "}
-              examples on Codesandbox
+              examples on CodeSandbox
             </p>
             <ul className="list-disc list-inside">
               <li className="mb-2">
