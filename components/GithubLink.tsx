@@ -5,7 +5,7 @@ export default function GithubLink({ href, className }: Props) {
     <a
       className={className}
       href={href}
-      aria-label="View the source code on GitHub"
+      aria-label="View source code on GitHub"
       rel="noopener noreferrer"
       target="_blank"
     >
