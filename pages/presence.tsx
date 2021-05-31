@@ -1,6 +1,7 @@
 import React from "react";
 import { useOthers, useMyPresence, RoomProvider } from "@liveblocks/react";
 import Cursor from "../components/Cursor";
+import GithubLink from "../components/GithubLink";
 
 const COLORS = [
   "#E57373",
@@ -61,6 +62,10 @@ function PresenceDemo() {
           />
         );
       })}
+      <GithubLink
+        className="fixed top-8 right-8"
+        href="https://github.com/liveblocks/next-js-examples/blob/main/pages/presence.tsx"
+      />
     </div>
   );
 }

@@ -3,6 +3,7 @@ import Head from "next/head";
 import ListItem from "../components/ListItem";
 import SingleLineCodeBlock from "../components/SingleLineCodeBlock";
 import InlineCodeBlock from "../components/InlineCodeBlock";
+import GithubLink from "../components/GithubLink";
 
 export async function getStaticProps() {
   return {
@@ -39,6 +40,10 @@ export default function Home({
           href="/favicon-16x16.png"
         />
       </Head>
+      <GithubLink
+        className="fixed top-8 right-8"
+        href="https://github.com/liveblocks/next-js-examples"
+      />
       <main className="container mx-auto px-8">
         <h1 className="text-3xl font-semibold mt-24 mb-2">
           Welcome to Liveblocks Next.js examples

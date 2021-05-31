@@ -1,6 +1,7 @@
 import { RoomProvider } from "@liveblocks/react";
 import React from "react";
 import Cursor from "../components/Cursor";
+import GithubLink from "../components/GithubLink";
 import useWindowLiveCursors from "../components/useWindowLiveCursors";
 
 const COLORS = ["#DC2626", "#D97706", "#059669", "#7C3AED", "#DB2777"];
@@ -46,6 +47,10 @@ function Demo() {
           y={y}
         />
       ))}
+      <GithubLink
+        className="fixed top-8 right-8"
+        href="https://github.com/liveblocks/next-js-examples/blob/main/pages/live-cursors-scrollable-window.tsx"
+      />
     </>
   );
 }

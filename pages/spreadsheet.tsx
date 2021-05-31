@@ -4,6 +4,7 @@ import {
   useUpdateMyPresence,
 } from "@liveblocks/react";
 import React, { useCallback, useMemo } from "react";
+import GithubLink from "../components/GithubLink";
 
 const COLORS = [
   "#E57373",
@@ -69,6 +70,10 @@ export function SpreadsheetDemo() {
         <Cell id="B5" onFocus={onFocus} cellsPresence={cellsPresence}></Cell>
         <Cell id="C5" onFocus={onFocus} cellsPresence={cellsPresence}></Cell>
       </div>
+      <GithubLink
+        className="fixed top-8 right-8"
+        href="https://github.com/liveblocks/next-js-examples/blob/main/pages/spreadsheet.tsx"
+      />
     </div>
   );
 }
@@ -98,7 +103,6 @@ function Cell({ onFocus, id, cellsPresence }: CellProps) {
     />
   );
 }
-
 
 export default function Room() {
   return (

@@ -5,9 +5,9 @@
   </a>
 </p>
 
-# Liveblocks × Next.js
+# Liveblocks × [Next.js](https://nextjs.org/).
 
-This repo shows how to use Liveblocks with Next.js.
+This repo shows how to use Liveblocks with [Next.js](https://nextjs.org/).
 
 ## Getting started
 

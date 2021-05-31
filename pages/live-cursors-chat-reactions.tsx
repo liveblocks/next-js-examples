@@ -8,6 +8,7 @@ import {
 import React, { useState, useCallback, useEffect } from "react";
 import Cursor from "../components/CursorWithMessage";
 import FlyingReaction from "../components/FlyingReaction";
+import GithubLink from "../components/GithubLink";
 import ReactionSelector from "../components/ReactionSelector";
 import useInterval from "../components/useInterval";
 
@@ -266,6 +267,11 @@ function LiveCursorsChatReactions() {
             />
           );
         })}
+
+        <GithubLink
+          className="fixed top-8 right-8"
+          href="https://github.com/liveblocks/next-js-examples/blob/main/pages/live-cursors-chat-reactions.tsx"
+        />
       </div>
     </>
   );
