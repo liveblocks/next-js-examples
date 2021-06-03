@@ -11,15 +11,12 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
   const room = req.body.room;
 
   if (room === "example-live-cursors-avatars") {
-    const animal = ANIMALS[Math.floor(Math.random() * ANIMALS.length)];
-    const adjective = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
-
     const response = await authorize({
       room,
       secret: API_KEY,
       userInfo: {
-        name: `${adjective} ${animal}`,
-        picture: `${animal}.svg`,
+        name: NAMES[Math.floor(Math.random() * NAMES.length)],
+        picture: `/assets/avatars/${Math.floor(Math.random() * 10)}.png`,
       },
     });
     return res.status(response.status).end(response.body);
@@ -32,6 +29,13 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
   return res.status(response.status).end(response.body);
 }
 
-const ADJECTIVES = ["Brave", "Mighty", "Glowing", "Silly", "Wise"];
-
-const ANIMALS = ["Bear", "Fox", "Giraffe"];
+const NAMES = [
+  "Charlie Layne",
+  "Mislav Abha",
+  "Tatum Paolo",
+  "Anjali Wanda",
+  "Jody Hekla",
+  "Emil Joyce",
+  "Jory Quispe",
+  "Quinn Elton",
+];

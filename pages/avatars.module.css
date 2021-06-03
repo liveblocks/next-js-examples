@@ -1,0 +1,23 @@
+.avatar:before {
+  content: attr(data-tooltip);
+  position: absolute;
+  opacity: 0;
+  transition: all 0.15s ease;
+  padding: 5px 10px;
+  color: white;
+  font-size: 0.75rem;
+  border-radius: 8px;
+  z-index: 1;
+  background: black;
+  white-space: nowrap;
+  margin-top: 10px;
+  margin-left: 52px;
+}
+
+.avatar:hover:before {
+  opacity: 1;
+}
+
+.avatar:not([data-tooltip-persistent]):before {
+  pointer-events: none;
+}
