@@ -97,6 +97,11 @@ export default function Home({
                     description="Presence"
                   />
                   <ListItem
+                    label="Live cursors + Avatars"
+                    href="/live-cursors-avatars"
+                    description="Presence"
+                  />
+                  <ListItem
                     label="Spreadsheet selection"
                     href="/spreadsheet"
                     description="Presence"

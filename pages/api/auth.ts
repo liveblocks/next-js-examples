@@ -9,9 +9,29 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
   }
 
   const room = req.body.room;
+
+  if (room === "example-live-cursors-avatars") {
+    const animal = ANIMALS[Math.floor(Math.random() * ANIMALS.length)];
+    const adjective = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
+
+    const response = await authorize({
+      room,
+      secret: API_KEY,
+      userInfo: {
+        name: `${adjective} ${animal}`,
+        picture: `${animal}.svg`,
+      },
+    });
+    return res.status(response.status).end(response.body);
+  }
+
   const response = await authorize({
     room,
     secret: API_KEY,
   });
   return res.status(response.status).end(response.body);
 }
+
+const ADJECTIVES = ["Brave", "Mighty", "Glowing", "Silly", "Wise"];
+
+const ANIMALS = ["Bear", "Fox", "Giraffe"];
