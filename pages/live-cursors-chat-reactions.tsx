@@ -7,8 +7,8 @@ import {
 } from "@liveblocks/react";
 import React, { useState, useCallback, useEffect } from "react";
 import Cursor from "../components/CursorWithMessage";
+import ExampleInfo from "../components/ExampleInfo";
 import FlyingReaction from "../components/FlyingReaction";
-import GithubLink from "../components/GithubLink";
 import ReactionSelector from "../components/ReactionSelector";
 import useInterval from "../components/useInterval";
 
@@ -267,11 +267,6 @@ function LiveCursorsChatReactions() {
             />
           );
         })}
-
-        <GithubLink
-          className="fixed top-8 right-8"
-          href="https://github.com/liveblocks/next-js-examples/blob/main/pages/live-cursors-chat-reactions.tsx"
-        />
       </div>
     </>
   );
@@ -288,10 +283,6 @@ export default function Room() {
     >
       <div className="fixed inset-0 flex justify-center items-center select-none bg-white">
         <div className="text-center max-w-sm">
-          <h1 className="text-xl">Live Cursors Chat Reactions</h1>
-          <p className="text-sm mt-1 text-gray-600">
-            Open this page in multiple browsers to see the live cursors.
-          </p>
           <ul className="flex items-center justify-center space-x-2 mt-4">
             <li className="flex items-center space-x-2 text-sm bg-gray-100 rounded-md py-2 px-3">
               <span>Reactions</span>
@@ -318,6 +309,12 @@ export default function Room() {
       </div>
 
       <LiveCursorsChatReactions />
+      <ExampleInfo
+        title="Live Cursors Chat Reactions"
+        description="Open this page in multiple windows to see the live cursors."
+        githubHref="https://github.com/liveblocks/next-js-examples/blob/main/pages/live-cursors-chat-reactions.tsx"
+        codeSandboxHref="https://codesandbox.io/s/github/liveblocks/next-js-examples?file=/pages/live-cursors-chat-reactions.tsx"
+      />
     </RoomProvider>
   );
 }

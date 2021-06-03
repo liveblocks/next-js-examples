@@ -1,6 +1,5 @@
 import { useStorage, List, Record, RoomProvider } from "@liveblocks/react";
 import React, { useState } from "react";
-import GithubLink from "../components/GithubLink";
 
 // Liveblocks
 type State = {
@@ -52,10 +51,6 @@ function StorageDemo() {
 
   return (
     <div className="container max-w-md mx-auto">
-      <GithubLink
-        className="fixed top-8 right-8"
-        href="https://github.com/liveblocks/next-js-examples/blob/main/pages/storage.tsx"
-      />
       <input
         className="w-full bg-white px-3.5 py-2 shadow-sm hover:shadow focus:shadow focus:outline-none rounded-lg mt-12 mb-2"
         type="text"

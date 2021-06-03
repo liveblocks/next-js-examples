@@ -1,7 +1,7 @@
 import React from "react";
 import { useOthers, useMyPresence, RoomProvider } from "@liveblocks/react";
 import Cursor from "../components/Cursor";
-import GithubLink from "../components/GithubLink";
+import ExampleInfo from "../components/ExampleInfo";
 
 const COLORS = [
   "#E57373",
@@ -62,10 +62,6 @@ function PresenceDemo() {
           />
         );
       })}
-      <GithubLink
-        className="fixed top-8 right-8"
-        href="https://github.com/liveblocks/next-js-examples/blob/main/pages/presence.tsx"
-      />
     </div>
   );
 }
@@ -79,6 +75,12 @@ export default function Room() {
       })}
     >
       <PresenceDemo />
+      <ExampleInfo
+        title="Basic Presence Example"
+        description="Open this page in multiple windows to see the live cursors."
+        githubHref="https://github.com/liveblocks/next-js-examples/blob/main/pages/presence.tsx"
+        codeSandboxHref="https://codesandbox.io/s/github/liveblocks/next-js-examples?file=/pages/presence.tsx"
+      />
     </RoomProvider>
   );
 }
