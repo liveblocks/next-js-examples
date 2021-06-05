@@ -17,4 +17,4 @@ To run examples locally
 - Create an account on [liveblocks.io](https://liveblocks.io/dashboard)
 - Copy your secret key from the [administration](https://liveblocks.io/dashboard/apikeys)
 - Create a file named `.env.local` and add your Liveblocks secret as environment variable `LIVEBLOCKS_SECRET_KEY=sk_test_yourkey`
-- Run `npm run dev` and go to [http://localhost:3000](http://localhost:3000`)
+- Run `npm run dev` and go to [http://localhost:3000](http://localhost:3000)
