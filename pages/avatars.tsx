@@ -1,31 +1,31 @@
-import { RoomProvider, useOthers } from "@liveblocks/react";
+import { RoomProvider, useOthers, useCurrentUser } from "@liveblocks/react";
 import React from "react";
 import ExampleInfo from "../components/ExampleInfo";
 import styles from "./avatars.module.css";
 
-const COLORS = ["#DC2626", "#D97706", "#059669", "#7C3AED", "#DB2777"];
 const IMAGE_SIZE = 48;
 
 function Demo() {
   const users = useOthers().toArray();
-  const hasMoreUsers = users.length > 4;
+  const currentUser = useCurrentUser();
+  const hasMoreUsers = users.length > 3;
 
   return (
     <main className="flex justify-center items-center h-screen select-none">
       <div className="flex flex-row pl-3">
-        {users.slice(0, 3).map(({ connectionId, info }, index) => {
+        {users.slice(0, 3).map(({ connectionId, info }) => {
           return (
             <Avatar
+              key={connectionId}
               picture={info?.picture}
               name={info?.name}
-              background={COLORS[connectionId % COLORS.length]}
             />
           );
         })}
 
         {hasMoreUsers && (
           <div
-            className={`border-4 rounded-full border-white bg-gray-400 flex justify-center items-center text-white -ml-3`}
+            className="border-4 rounded-full border-white bg-gray-400 flex justify-center items-center text-white -ml-3"
             style={{
               minWidth: `${IMAGE_SIZE + 8}px`,
               width: `${IMAGE_SIZE + 8}px`,
@@ -35,28 +35,25 @@ function Demo() {
             +{users.length - 3}
           </div>
         )}
+
+        {currentUser && (
+          <div className="relative ml-8">
+            <Avatar picture={currentUser.info?.picture} name="You" />
+          </div>
+        )}
       </div>
     </main>
   );
 }
 
-function Avatar({
-  picture,
-  name,
-  background,
-}: {
-  picture?: string;
-  name?: string;
-  background: string;
-}) {
+function Avatar({ picture, name }: { picture?: string; name?: string }) {
   return (
     <div
-      className={`border-4 rounded-full border-white -ml-3 ${styles.avatar}`}
+      className={`border-4 rounded-full border-white -ml-3 bg-gray-400 ${styles.avatar}`}
       style={{
         minWidth: `${IMAGE_SIZE + 8}px`,
         width: `${IMAGE_SIZE + 8}px`,
         height: `${IMAGE_SIZE + 8}px`,
-        background,
       }}
       data-tooltip={name}
     >
