@@ -1,7 +1,6 @@
 <p align="center">
   <a href="https://liveblocks.io">
     <img src="https://liveblocks.io/icon-192x192.png" height="96">
-    <h3 align="center">Liveblocks</h3>
   </a>
 </p>
 
