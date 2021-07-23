@@ -1,4 +1,5 @@
-import { createClient, LiveblocksProvider } from "@liveblocks/react";
+import { LiveblocksProvider } from "@liveblocks/react";
+import { createClient } from "@liveblocks/client";
 import { AppProps } from "next/app";
 import "tailwindcss/tailwind.css";
 import "../components/globals.css";

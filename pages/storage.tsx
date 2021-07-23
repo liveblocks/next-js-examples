@@ -1,4 +1,5 @@
-import { useStorage, List, Record, RoomProvider } from "@liveblocks/react";
+import { Record, List } from "@liveblocks/client";
+import { useStorage, RoomProvider } from "@liveblocks/react";
 import React, { useState } from "react";
 
 // Liveblocks
