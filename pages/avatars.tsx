@@ -1,4 +1,4 @@
-import { RoomProvider, useOthers, useCurrentUser } from "@liveblocks/react";
+import { RoomProvider, useOthers, useSelf } from "@liveblocks/react";
 import React from "react";
 import ExampleInfo from "../components/ExampleInfo";
 import styles from "./avatars.module.css";
@@ -7,7 +7,7 @@ const IMAGE_SIZE = 48;
 
 function Demo() {
   const users = useOthers().toArray();
-  const currentUser = useCurrentUser();
+  const currentUser = useSelf();
   const hasMoreUsers = users.length > 3;
 
   return (
