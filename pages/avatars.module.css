@@ -17,7 +17,3 @@
 .avatar:hover:before {
   opacity: 1;
 }
-
-.avatar:not([data-tooltip-persistent]):before {
-  pointer-events: none;
-}
