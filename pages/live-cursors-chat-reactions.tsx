@@ -1,3 +1,10 @@
+/**
+ * This file shows how to create Live Cursors with a small chat and interactions
+ *
+ * Because it's a bit more advanced that others examples, it's implemented using typescript to ensure that we introduce less bug while maintaining it.
+ * It also uses Tailwind CSS for the styling
+ */
+
 import {
   RoomProvider,
   useBroadcastEvent,

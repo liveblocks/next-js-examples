@@ -47,11 +47,12 @@ export default function Home({
           <>
             <p className="text-gray-400 mb-4 text-lg">
               Get started with the real-time examples below.
-              <i>
-                Note that the Storage demo will not work if you don't have
-                access to the private beta
-              </i>
             </p>
+
+            <i>
+              ⚠️ Note that the Storage demo will not work if you don't have
+              access to the private beta
+            </i>
 
             <div className="grid grid-cols-3 gap-16">
               <div>

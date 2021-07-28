@@ -1,17 +1,20 @@
-import { RoomProvider } from "@liveblocks/react";
-import React from "react";
-import Cursor from "../components/Cursor";
+/**
+ * This file shows how to add live cursors on a scrollable (on the vertical axis).
+ *
+ * The "x" coordinate is calculated as a percentage of the width of the window. Works well when the content of the page is centered.
+ * The "y" coordinate is absolute and take the scroll position into account
+ */
+
+import {
+  RoomProvider,
+  useUpdateMyPresence,
+  useOthers,
+} from "@liveblocks/react";
+import React, { useEffect } from "react";
 import ExampleInfo from "../components/ExampleInfo";
-import useWindowLiveCursors from "../components/useWindowLiveCursors";
-
-const COLORS = ["#DC2626", "#D97706", "#059669", "#7C3AED", "#DB2777"];
-
-type Presence = {
-  cursor: { x: number; y: number };
-};
 
 function Demo() {
-  const cursors = useWindowLiveCursors<Presence>();
+  const cursors = useWindowLiveCursors();
 
   return (
     <>
@@ -84,6 +87,111 @@ function Demo() {
     </>
   );
 }
+
+function useWindowLiveCursors() {
+  const updateMyPresence = useUpdateMyPresence();
+
+  useEffect(() => {
+    let scroll = {
+      x: window.scrollX,
+      y: window.scrollY,
+    };
+
+    let lastPosition = null;
+
+    function transformPosition(point) {
+      return {
+        x: point.x / window.innerWidth,
+        y: point.y,
+      };
+    }
+
+    function onPointerMove(event) {
+      const position = {
+        x: event.pageX,
+        y: event.pageY,
+      };
+      lastPosition = position;
+      updateMyPresence({
+        cursor: transformPosition(position),
+      });
+    }
+
+    function onPointerLeave() {
+      lastPosition = null;
+      updateMyPresence({ cursor: null });
+    }
+
+    function onDocumentScroll() {
+      if (lastPosition) {
+        const offsetX = window.scrollX - scroll.x;
+        const offsetY = window.scrollY - scroll.y;
+        const position = {
+          x: lastPosition.x + offsetX,
+          y: lastPosition.y + offsetY,
+        };
+        lastPosition = position;
+        updateMyPresence({
+          cursor: transformPosition(position),
+        });
+      }
+      scroll.x = window.scrollX;
+      scroll.y = window.scrollY;
+    }
+
+    document.addEventListener("scroll", onDocumentScroll);
+    document.addEventListener("pointermove", onPointerMove);
+    document.addEventListener("pointerleave", onPointerLeave);
+
+    return () => {
+      document.removeEventListener("scroll", onDocumentScroll);
+      document.removeEventListener("pointermove", onPointerMove);
+      document.removeEventListener("pointerleave", onPointerLeave);
+    };
+  }, [updateMyPresence]);
+
+  const others = useOthers();
+
+  return others
+    .toArray()
+    .filter((user) => user.presence?.cursor != null)
+    .map(({ connectionId, presence, id, info }) => {
+      return {
+        x: presence.cursor.x * window.innerWidth,
+        y: presence.cursor.y,
+        connectionId,
+        id,
+        info,
+        presence,
+      };
+    });
+}
+
+function Cursor({ color, x, y }) {
+  return (
+    <svg
+      style={{
+        position: "absolute",
+        left: 0,
+        top: 0,
+        transition: "transform 0.5s cubic-bezier(.17,.93,.38,1)",
+        transform: `translateX(${x}px) translateY(${y}px)`,
+      }}
+      width="24"
+      height="36"
+      viewBox="0 0 24 36"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M5.65376 12.3673H5.46026L5.31717 12.4976L0.500002 16.8829L0.500002 1.19841L11.7841 12.3673H5.65376Z"
+        fill={color}
+      />
+    </svg>
+  );
+}
+
+const COLORS = ["#DC2626", "#D97706", "#059669", "#7C3AED", "#DB2777"];
 
 export default function Root() {
   return (
