@@ -10,6 +10,9 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
 
   const room = req.body.room;
 
+  // For the avatar examples, we're generating random users with picture
+  // and set their info from the authentication endpoint
+  // See https://liveblocks.io/docs/api-reference/liveblocks-node#authorize for more information
   if (room === "example-live-cursors-avatars") {
     const response = await authorize({
       room,

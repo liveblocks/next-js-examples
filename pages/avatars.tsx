@@ -5,6 +5,12 @@ import styles from "./avatars.module.css";
 
 const IMAGE_SIZE = 48;
 
+/**
+ * The users picture and name are not set via the `useMyPresence` hook like the cursors.
+ *
+ * They are coming from the authentication endpoint directly.
+ * See pages/api/auth.ts and https://liveblocks.io/docs/api-reference/liveblocks-node#authorize for more information
+ */
 function Demo() {
   const users = useOthers().toArray();
   const currentUser = useSelf();
