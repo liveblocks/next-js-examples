@@ -6,7 +6,7 @@ import { nanoid } from "nanoid";
 export default function Room() {
   return (
     <RoomProvider
-      id="example-storage-tmp-1"
+      id="example-storage"
       defaultPresence={() => ({
         cursor: null,
       })}
