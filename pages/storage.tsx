@@ -1,28 +1,24 @@
-import { Record, List } from "@liveblocks/client";
-import { useStorage, RoomProvider } from "@liveblocks/react";
+import { useStorage, RoomProvider, useRecord } from "@liveblocks/react";
+import { LiveRecord } from "@liveblocks/client";
 import React, { useState } from "react";
-
-// Liveblocks
-type State = {
-  todos: List<Record<Todo>>;
-};
-
-// React
-// type State = {
-//   todos: Array<Todo>;
-// };
-
-type Todo = {
-  text: string | null;
-};
+import { nanoid } from "nanoid";
 
 export default function Room() {
   return (
     <RoomProvider
-      id="example-storage"
+      id="example-storage-tmp-1"
       defaultPresence={() => ({
         cursor: null,
       })}
+      /**
+       * Initialize your storage here.
+       * As opposed to RoomService, you don't get the maps and lists by name.
+       * The storage is a object that contains all the nested records (similar to RS maps) and lists.
+       * Nested types are supported.
+       */
+      defaultStorageRoot={{
+        todos: new LiveRecord(),
+      }}
     >
       <StorageDemo />
     </RoomProvider>
@@ -30,25 +26,23 @@ export default function Room() {
 }
 
 function StorageDemo() {
-  const [text, setText] = useState("");
+  const [root] = useStorage();
 
-  // Liveblocks
-  const [state, { createRecord, pushItem, deleteItem }] = useStorage<State>(
-    ({ createList }) => ({
-      todos: createList(),
-    })
-  );
-
-  // React
-  // const [state, setState] = useState<State>(() => ({ todos: [] }));
-
-  if (state == null) {
+  if (root == null) {
     return (
       <div className="container max-w-md mx-auto min-h-screen flex items-center justify-center">
         Loading…
       </div>
     );
   }
+
+  return <Example map={root.get("todos")} />;
+}
+
+// Here we're using a record like a map. It's confusing so I'll create a new CRDT in the following days to make the code clearer
+function Example({ map }: { map: LiveRecord }) {
+  const [text, setText] = useState("");
+  const items = useRecord(map);
 
   return (
     <div className="container max-w-md mx-auto">
@@ -60,31 +54,22 @@ function StorageDemo() {
         onChange={(e) => setText(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
-            // Liveblocks
-            pushItem(state.todos, createRecord({ text }));
-
-            // React
-            // setState({ todos: state.todos.concat({ text }) });
-
+            map.set(nanoid(), { text });
             setText("");
           }
         }}
       ></input>
-      {state.todos.map((item, index) => {
+      {Object.entries(items).map(([id, todo]) => {
         return (
           <div
             className="px-3.5 py-2 flex justify-between items-center"
-            key={index}
+            key={id}
           >
-            <div style={{ flexGrow: 1 }}>{item.text}</div>
+            <div style={{ flexGrow: 1 }}>{todo.text}</div>
             <button
               className="focus:outline-none"
               onClick={() => {
-                // Liveblocks
-                deleteItem(state.todos, index);
-
-                // React
-                // setState({ todos: state.todos.filter((_, i) => i !== index) });
+                map.delete(id);
               }}
             >
               ✕
