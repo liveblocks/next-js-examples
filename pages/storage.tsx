@@ -1,7 +1,11 @@
-import { useStorage, RoomProvider, useRecord } from "@liveblocks/react";
-import { LiveRecord } from "@liveblocks/client";
+import { RoomProvider, useMap } from "@liveblocks/react";
+import { LiveMap } from "@liveblocks/client";
 import React, { useState } from "react";
 import { nanoid } from "nanoid";
+
+type Todo = {
+  text: string;
+};
 
 export default function Room() {
   return (
@@ -9,15 +13,10 @@ export default function Room() {
       id="example-storage"
       defaultPresence={() => ({
         cursor: null,
+        selectedElement: null
       })}
-      /**
-       * Initialize your storage here.
-       * As opposed to RoomService, you don't get the maps and lists by name.
-       * The storage is a object that contains all the nested records (similar to RS maps) and lists.
-       * Nested types are supported.
-       */
       defaultStorageRoot={{
-        todos: new LiveRecord(),
+        todos: new LiveMap<string, Todo>(),
       }}
     >
       <StorageDemo />
@@ -26,23 +25,16 @@ export default function Room() {
 }
 
 function StorageDemo() {
-  const [root] = useStorage();
+  const todos = useMap<string, Todo>("todos");
+  const [text, setText] = useState("");
 
-  if (root == null) {
+  if (todos == null) {
     return (
       <div className="container max-w-md mx-auto min-h-screen flex items-center justify-center">
         Loading…
       </div>
     );
   }
-
-  return <Example map={root.get("todos")} />;
-}
-
-// Here we're using a record like a map. It's confusing so I'll create a new CRDT in the following days to make the code clearer
-function Example({ map }: { map: LiveRecord }) {
-  const [text, setText] = useState("");
-  const items = useRecord(map);
 
   return (
     <div className="container max-w-md mx-auto">
@@ -54,12 +46,12 @@ function Example({ map }: { map: LiveRecord }) {
         onChange={(e) => setText(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
-            map.set(nanoid(), { text });
+            todos.set(nanoid(), { text });
             setText("");
           }
         }}
       ></input>
-      {Object.entries(items).map(([id, todo]) => {
+      {Array.from(todos).map(([id, todo]) => {
         return (
           <div
             className="px-3.5 py-2 flex justify-between items-center"
@@ -69,7 +61,7 @@ function Example({ map }: { map: LiveRecord }) {
             <button
               className="focus:outline-none"
               onClick={() => {
-                map.delete(id);
+                todos.delete(id);
               }}
             >
               ✕
