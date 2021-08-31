@@ -1,7 +1,6 @@
-import { RoomProvider, useMap } from "@liveblocks/react";
-import { LiveMap } from "@liveblocks/client";
+import { RoomProvider, useList } from "@liveblocks/react";
+import { LiveList } from "@liveblocks/client";
 import React, { useState } from "react";
-import { nanoid } from "nanoid";
 
 type Todo = {
   text: string;
@@ -11,12 +10,9 @@ export default function Room() {
   return (
     <RoomProvider
       id="example-storage"
-      defaultPresence={() => ({
-        cursor: null,
-        selectedElement: null
-      })}
       defaultStorageRoot={{
-        todos: new LiveMap<string, Todo>(),
+        // storage keys can be initialized here
+        todos: new LiveList<Todo>(),
       }}
     >
       <StorageDemo />
@@ -25,7 +21,7 @@ export default function Room() {
 }
 
 function StorageDemo() {
-  const todos = useMap<string, Todo>("todos");
+  const todos = useList<Todo>("todos");
   const [text, setText] = useState("");
 
   if (todos == null) {
@@ -46,22 +42,22 @@ function StorageDemo() {
         onChange={(e) => setText(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
-            todos.set(nanoid(), { text });
+            todos.push({ text });
             setText("");
           }
         }}
       ></input>
-      {Array.from(todos).map(([id, todo]) => {
+      {todos.toArray().map((todo, index) => {
         return (
           <div
             className="px-3.5 py-2 flex justify-between items-center"
-            key={id}
+            key={index}
           >
             <div style={{ flexGrow: 1 }}>{todo.text}</div>
             <button
               className="focus:outline-none"
               onClick={() => {
-                todos.delete(id);
+                todos.delete(index);
               }}
             >
               ✕
