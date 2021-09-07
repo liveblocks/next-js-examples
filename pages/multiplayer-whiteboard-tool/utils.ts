@@ -5,10 +5,11 @@ import {
   Layer,
   LayerType,
   Point,
-  RectangleLayer,
   XYWH,
+  PathLayer,
+  Camera,
 } from "./types";
-import { LiveList, LiveObject } from "@liveblocks/client";
+import { LiveList, LiveMap, LiveObject } from "@liveblocks/client";
 
 export function colorToCss(color: Color) {
   return `#${color.r.toString(16).padStart(2, "0")}${color.g
@@ -48,13 +49,15 @@ export function resizeBounds(bounds: XYWH, corner: Side, point: Point): XYWH {
 }
 
 export function findIntersectingLayerWithPoint(
-  layers: Array<LiveObject<Layer>>,
+  layerIds: string[],
+  layers: LiveMap<string, LiveObject<Layer>>,
   point: Point
 ) {
-  for (let i = layers.length - 1; i >= 0; i--) {
-    const layer = layers[i];
-    if (isHittingLayer(layer.toObject(), point)) {
-      return layer.get("id");
+  for (let i = layerIds.length - 1; i >= 0; i--) {
+    const layerId = layerIds[i];
+    const layer = layers.get(layerId);
+    if (layer && isHittingLayer(layer.toObject(), point)) {
+      return layerId;
     }
   }
 
@@ -65,8 +68,9 @@ export function isHittingLayer(layer: Layer, point: Point) {
   switch (layer.type) {
     case LayerType.Ellipse:
       return isHittingEllipse(layer, point);
-    case LayerType.Rectangle:
+    // TODO: Implement path hit testing instead of using Rectangle hit box
     case LayerType.Path:
+    case LayerType.Rectangle:
       return isHittingRectangle(layer, point);
     default:
       return false;
@@ -99,7 +103,8 @@ export function isHittingEllipse(layer: EllipseLayer, point: Point) {
  * TODO: Implement ellipse and path / selection net collision
  */
 export function findIntersectingLayersWithRectangle(
-  layers: Array<LiveObject<Layer>>,
+  layerIds: LiveList<string>,
+  layers: LiveMap<string, LiveObject<Layer>>,
   a: Point,
   b: Point
 ) {
@@ -110,31 +115,35 @@ export function findIntersectingLayersWithRectangle(
     height: Math.abs(a.y - b.y),
   };
 
-  const layerIds = [];
+  const ids = [];
 
-  for (const layer of layers) {
-    const { x, y, height, width, id } = layer.toObject();
+  for (const layerId of layerIds.toArray()) {
+    const layer = layers.get(layerId);
+    if (layer == null) {
+      continue;
+    }
+
+    const { x, y, height, width } = layer.toObject();
     if (
       rect.x + rect.width > x &&
       rect.x < x + width &&
       rect.y + rect.height > y &&
       rect.y < y + height
     ) {
-      layerIds.push(id);
+      ids.push(layerId);
     }
   }
 
-  return layerIds;
+  return ids;
 }
 
-// TODO Complexity is 0(n2). Make it O(n) with get layer by id from list
 export function getLayers(
-  layers: Array<LiveObject<Layer>>,
+  layers: LiveMap<string, LiveObject<Layer>>,
   selection: string[]
 ): LiveObject<Layer>[] {
   const result = [];
   for (const id of selection) {
-    const layer = layers.find((l) => l.get("id") == id);
+    const layer = layers.get(id);
     if (layer) {
       result.push(layer);
     }
@@ -143,26 +152,26 @@ export function getLayers(
 }
 
 export function boundingBox(
-  allLayers: Array<LiveObject<Layer>>,
+  allLayers: LiveMap<string, LiveObject<Layer>>,
   selection: string[]
 ): XYWH | null {
   if (selection.length === 0) {
     return null;
   }
 
-  const layers = getLayers(allLayers, selection);
+  const layers = getLayers(allLayers, selection).map((l) => l.toObject());
 
   if (layers.length === 0) {
     return null;
   }
 
-  let left = layers[0].get("x");
-  let right = layers[0].get("x") + layers[0].get("width");
-  let top = layers[0].get("y");
-  let bottom = layers[0].get("y") + layers[0].get("height");
+  let left = layers[0].x;
+  let right = layers[0].x + layers[0].width;
+  let top = layers[0].y;
+  let bottom = layers[0].y + layers[0].height;
 
   for (let i = 1; i < layers.length; i++) {
-    const { x, y, width, height } = layers[i].toObject();
+    const { x, y, width, height } = layers[i];
     if (left > x) {
       left = x;
     }
@@ -199,4 +208,54 @@ export function getSvgPathFromStroke(stroke: number[][]) {
 
   d.push("Z");
   return d.join(" ");
+}
+
+export function penPointsToPathLayer(
+  points: number[][],
+  color: Color
+): PathLayer {
+  if (points.length < 2) {
+    throw new Error("Can't transform points with less than 2 points");
+  }
+
+  let left = Number.POSITIVE_INFINITY;
+  let top = Number.POSITIVE_INFINITY;
+  let right = Number.NEGATIVE_INFINITY;
+  let bottom = Number.NEGATIVE_INFINITY;
+
+  for (const point of points) {
+    const [x, y] = point;
+    if (left > x) {
+      left = x;
+    }
+    if (top > y) {
+      top = y;
+    }
+    if (right < x) {
+      right = x;
+    }
+    if (bottom < y) {
+      bottom = y;
+    }
+  }
+
+  return {
+    type: LayerType.Path,
+    x: left,
+    y: top,
+    width: right - left,
+    height: bottom - top,
+    fill: color,
+    points: points.map(([x, y, pressure]) => [x - left, y - top, pressure]),
+  };
+}
+
+export function pointerEventToCanvasPoint(
+  e: React.PointerEvent,
+  camera: Camera
+): Point {
+  return {
+    x: Math.round(e.clientX) - camera.x,
+    y: Math.round(e.clientY) - camera.y,
+  };
 }

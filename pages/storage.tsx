@@ -1,5 +1,4 @@
 import { RoomProvider, useList } from "@liveblocks/react";
-import { LiveList } from "@liveblocks/client";
 import React, { useState } from "react";
 
 type Todo = {
@@ -8,13 +7,7 @@ type Todo = {
 
 export default function Room() {
   return (
-    <RoomProvider
-      id="example-storage"
-      defaultStorageRoot={{
-        // storage keys can be initialized here
-        todos: new LiveList<Todo>(),
-      }}
-    >
+    <RoomProvider id="example-storage">
       <StorageDemo />
     </RoomProvider>
   );

@@ -3,16 +3,17 @@ import { colorToCss, getSvgPathFromStroke } from "./utils";
 import getStroke from "perfect-freehand";
 
 type Props = {
+  id: string;
   layer: PathLayer;
   isAnimated: boolean;
   onPointerDown: (e: React.PointerEvent, id: string) => void;
 };
 
-export default function Path({ layer, isAnimated, onPointerDown }: Props) {
+export default function Path({ layer, isAnimated, onPointerDown, id }: Props) {
   return (
     <path
-      key={layer.id}
-      onPointerDown={(e) => onPointerDown(e, layer.id)}
+      key={id}
+      onPointerDown={(e) => onPointerDown(e, id)}
       d={getSvgPathFromStroke(
         getStroke(layer.points, {
           size: 16,

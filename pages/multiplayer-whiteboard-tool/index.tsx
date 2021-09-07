@@ -3,15 +3,11 @@ import {
   useOthers,
   useList,
   RoomProvider,
-  LiveblocksProvider,
+  useMap,
 } from "@liveblocks/react";
-import { LiveList, LiveObject } from "@liveblocks/client";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import ColorPicker from "./ColorPicker";
-import Ellipse from "./Ellipse";
+import { LiveList, LiveMap, LiveObject } from "@liveblocks/client";
+import React, { useCallback, useEffect, useState } from "react";
 import IconButton from "./IconButton";
-import Rectangle from "./Rectangle";
-import Path from "./Path";
 import {
   Color,
   Layer,
@@ -19,10 +15,7 @@ import {
   CanvasState,
   CanvasMode,
   Presence,
-  PathLayer,
   Camera,
-  Point,
-  RectangleLayer,
   Side,
   XYWH,
 } from "./types";
@@ -34,11 +27,16 @@ import {
   findIntersectingLayersWithRectangle,
   getLayers,
   getSvgPathFromStroke,
+  penPointsToPathLayer,
+  pointerEventToCanvasPoint,
   resizeBounds,
 } from "./utils";
 import SelectionBox from "./SelectionBox";
 import { nanoid } from "nanoid";
 import LayerComponent from "./LayerComponent";
+import SelectionTools from "./SelectionTools";
+import LoadingIndicator from "./LoadingIndicator";
+import { useSelectionBounds } from "./hooks";
 
 const MAX_LAYERS = 100;
 
@@ -60,28 +58,25 @@ export default function Room() {
 }
 
 function WhiteboardTool() {
-  const layers = useList<LiveObject<Layer>>("layers");
+  // layers is a map that contains all the shape drawn on the canvas
+  const layers = useMap<string, LiveObject<Layer>>("layers");
+  // layerIds is list of all the layer ids ordered by their z-index
+  const layerIds = useList<string>("layerIds");
 
-  if (layers == null) {
-    return (
-      <span className={styles.loading_container}>
-        <svg
-          className={styles.loading_svg}
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          fill="none"
-        >
-          <path d="M16 8C16 9.58225 15.5308 11.129 14.6518 12.4446C13.7727 13.7602 12.5233 14.7855 11.0615 15.391C9.59966 15.9965 7.99113 16.155 6.43928 15.8463C4.88743 15.5376 3.46197 14.7757 2.34315 13.6569C1.22433 12.538 0.4624 11.1126 0.153718 9.56072C-0.154964 8.00887 0.00346269 6.40034 0.608964 4.93853C1.21446 3.47672 2.23984 2.22729 3.55544 1.34824C4.87103 0.469192 6.41775 -1.88681e-08 8 0L8 1.52681C6.71972 1.52681 5.4682 1.90645 4.40369 2.61774C3.33917 3.32902 2.50949 4.33999 2.01955 5.52282C1.52961 6.70564 1.40142 8.00718 1.65119 9.26286C1.90096 10.5185 2.51747 11.6719 3.42276 12.5772C4.32805 13.4825 5.48147 14.099 6.73714 14.3488C7.99282 14.5986 9.29436 14.4704 10.4772 13.9805C11.66 13.4905 12.671 12.6608 13.3823 11.5963C14.0935 10.5318 14.4732 9.28028 14.4732 8H16Z" />
-        </svg>
-      </span>
-    );
+  if (layerIds == null || layers == null) {
+    return <LoadingIndicator />;
   }
 
-  return <Canvas list={layers} />;
+  return <Canvas layers={layers} layerIds={layerIds} />;
 }
 
-function Canvas({ list }: { list: LiveList<LiveObject<Layer>> }) {
+function Canvas({
+  layerIds,
+  layers,
+}: {
+  layerIds: LiveList<string>;
+  layers: LiveMap<string, LiveObject<Layer>>;
+}) {
   const [{ selection, penPoints }, setPresence] = useMyPresence<Presence>();
   const [canvasState, setState] = useState<CanvasState>({
     mode: CanvasMode.None,
@@ -93,6 +88,8 @@ function Canvas({ list }: { list: LiveList<LiveObject<Layer>> }) {
     b: 42,
   });
 
+  const selectionBounds = useSelectionBounds(layers, selection);
+
   useEffect(() => {
     // Disable scroll bounce on window to make the panning work properly
     document.body.classList.add(styles.no_scroll);
@@ -101,18 +98,15 @@ function Canvas({ list }: { list: LiveList<LiveObject<Layer>> }) {
     };
   }, []);
 
-  const layers = list.toArray();
-
-  const bBox = boundingBox(layers, selection);
-
   const deleteItems = useCallback(() => {
     for (const id of selection) {
-      const index = list.toArray().findIndex((layer) => layer.get("id") === id);
+      const index = layerIds.toArray().findIndex((layerId) => layerId === id);
+      layers.delete(id);
       if (index !== -1) {
-        list.delete(index);
+        layerIds.delete(index);
       }
     }
-  }, [list, selection]);
+  }, [layerIds, layers, selection]);
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -156,30 +150,34 @@ function Canvas({ list }: { list: LiveList<LiveObject<Layer>> }) {
   const moveToFront = useCallback(() => {
     const indices: number[] = [];
 
-    for (let i = 0; i < layers.length; i++) {
-      if (selection.includes(layers[i].get("id"))) {
+    const arr = layerIds.toArray();
+
+    for (let i = 0; i < arr.length; i++) {
+      if (selection.includes(arr[i])) {
         indices.push(i);
       }
     }
 
     for (let i = indices.length - 1; i >= 0; i--) {
-      list.move(indices[i], layers.length - 1 - (indices.length - 1 - i));
+      layerIds.move(indices[i], arr.length - 1 - (indices.length - 1 - i));
     }
-  }, [list, selection]);
+  }, [layerIds, selection]);
 
   const moveToBack = useCallback(() => {
     const indices: number[] = [];
 
-    for (let i = 0; i < layers.length; i++) {
-      if (selection.includes(layers[i].get("id"))) {
+    const arr = layerIds.toArray();
+
+    for (let i = 0; i < arr.length; i++) {
+      if (selection.includes(arr[i])) {
         indices.push(i);
       }
     }
 
     for (let i = 0; i < indices.length; i++) {
-      list.move(indices[i], i);
+      layerIds.move(indices[i], i);
     }
-  }, [list, selection]);
+  }, [layerIds, selection]);
 
   const onResizeHandlePointerDown = useCallback(
     (corner: Side, initialBounds: XYWH) => {
@@ -195,10 +193,10 @@ function Canvas({ list }: { list: LiveList<LiveObject<Layer>> }) {
   return (
     <>
       <div className={styles.canvas}>
-        {bBox && (
-          <SelectionInspector
-            x={bBox.width / 2 + bBox.x + camera.x}
-            y={bBox.y + camera.y}
+        {selectionBounds && (
+          <SelectionTools
+            x={selectionBounds.width / 2 + selectionBounds.x + camera.x}
+            y={selectionBounds.y + camera.y}
             setFill={setFill}
             moveToFront={moveToFront}
             moveToBack={moveToBack}
@@ -217,16 +215,15 @@ function Canvas({ list }: { list: LiveList<LiveObject<Layer>> }) {
             const point = pointerEventToCanvasPoint(e, camera);
             if (
               canvasState.mode === CanvasMode.Drawing &&
-              list.toArray().length < MAX_LAYERS
+              layers.size < MAX_LAYERS
             ) {
-              if (list.toArray().length >= MAX_LAYERS) {
+              if (layers.size >= MAX_LAYERS) {
                 setPresence({ selection: [] });
                 setState({ mode: CanvasMode.None });
                 return;
               }
               const layerId = nanoid();
               const layer = new LiveObject({
-                id: layerId,
                 type: canvasState.layerType,
                 x: point.x,
                 y: point.y,
@@ -234,7 +231,8 @@ function Canvas({ list }: { list: LiveList<LiveObject<Layer>> }) {
                 width: 100,
                 fill: lastUsedColor,
               });
-              list.push(layer);
+              layerIds.push(layerId);
+              layers.set(layerId, layer);
               setPresence({ selection: [layerId] });
               setState({ mode: CanvasMode.None });
               return;
@@ -274,6 +272,7 @@ function Canvas({ list }: { list: LiveList<LiveObject<Layer>> }) {
                 current,
               });
               const ids = findIntersectingLayersWithRectangle(
+                layerIds,
                 layers,
                 canvasState.origin,
                 current
@@ -286,13 +285,12 @@ function Canvas({ list }: { list: LiveList<LiveObject<Layer>> }) {
               };
 
               for (const id of selection) {
-                for (const layer of layers) {
-                  if (layer.get("id") === id && layer) {
-                    layer.update({
-                      x: layer.get("x") + offset.x,
-                      y: layer.get("y") + offset.y,
-                    });
-                  }
+                const layer = layers.get(id);
+                if (layer) {
+                  layer.update({
+                    x: layer.get("x") + offset.x,
+                    y: layer.get("y") + offset.y,
+                  });
                 }
               }
 
@@ -304,10 +302,9 @@ function Canvas({ list }: { list: LiveList<LiveObject<Layer>> }) {
                 canvasState.corner,
                 current
               );
-              for (const layer of layers) {
-                if (layer.get("id") === selection[0]) {
-                  layer.update(bounds);
-                }
+              const layer = layers.get(selection[0]);
+              if (layer) {
+                layer.update(bounds);
               }
             } else if (
               canvasState.mode === CanvasMode.Pencil &&
@@ -327,7 +324,7 @@ function Canvas({ list }: { list: LiveList<LiveObject<Layer>> }) {
               setPresence({ cursor: current });
             }
           }}
-          onPointerUp={(e) => {
+          onPointerUp={() => {
             if (
               canvasState.mode === CanvasMode.None ||
               canvasState.mode === CanvasMode.Pressing
@@ -335,10 +332,13 @@ function Canvas({ list }: { list: LiveList<LiveObject<Layer>> }) {
               setPresence({ selection: [] });
             }
             if (canvasState.mode === CanvasMode.Pencil && penPoints != null) {
-              if (penPoints.length > 2 && list.toArray().length < MAX_LAYERS) {
-                const path = penPointsToPathLayer(penPoints, lastUsedColor);
-                const record = new LiveObject(path);
-                list.push(record);
+              if (penPoints.length > 2 && layers.size < MAX_LAYERS) {
+                const id = nanoid();
+                layers.set(
+                  id,
+                  new LiveObject(penPointsToPathLayer(penPoints, lastUsedColor))
+                );
+                layerIds.push(id);
                 setPresence({ penPoints: null });
                 setState({ mode: CanvasMode.Pencil });
                 return;
@@ -356,18 +356,27 @@ function Canvas({ list }: { list: LiveList<LiveObject<Layer>> }) {
               transform: `translate(${camera.x}px, ${camera.y}px)`,
             }}
           >
-            {layers.map((layerObj) => (
-              <LayerComponent
-                key={layerObj.get("id")}
-                mode={canvasState.mode}
-                onLayerPointerDown={onLayerPointerDown}
-                layer={layerObj}
-              />
-            ))}
-            {bBox && (
+            {layerIds.toArray().map((layerId) => {
+              const layer = layers.get(layerId);
+              if (layer == null) {
+                return null;
+              }
+
+              return (
+                <LayerComponent
+                  key={layerId}
+                  id={layerId}
+                  mode={canvasState.mode}
+                  onLayerPointerDown={onLayerPointerDown}
+                  layer={layer}
+                />
+              );
+            })}
+            {selectionBounds && (
               <SelectionBox
                 selection={selection}
-                layers={list}
+                bounds={selectionBounds}
+                layers={layers}
                 onResizeHandlePointerDown={onResizeHandlePointerDown}
               />
             )}
@@ -383,7 +392,7 @@ function Canvas({ list }: { list: LiveList<LiveObject<Layer>> }) {
                   )}
                 />
               )}
-            <MultiplayerGuides layers={layers} />
+            <MultiplayerGuides />
             {penPoints != null && penPoints.length > 0 && (
               <path
                 fill={colorToCss(lastUsedColor)}
@@ -486,191 +495,78 @@ function Canvas({ list }: { list: LiveList<LiveObject<Layer>> }) {
   );
 }
 
-type ToolsProps = {
-  x: number;
-  y: number;
-  setFill: (color: Color) => void;
-  moveToFront: () => void;
-  moveToBack: () => void;
-  deleteItems: () => void;
-};
-
-function SelectionInspector({
-  x,
-  y,
-  setFill,
-  moveToFront,
-  moveToBack,
-  deleteItems,
-}: ToolsProps) {
-  return (
-    <div
-      className={styles.selection_inspector}
-      style={{
-        transform: `translate(calc(${x}px - 50%), calc(${y - 16}px - 100%))`,
-      }}
-    >
-      <ColorPicker onChange={setFill} />
-
-      <div>
-        <IconButton onClick={moveToFront}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path
-              fillRule="evenodd"
-              clipRule="evenodd"
-              d="M9 6.5L12 2L15 6.5H12.75V9.71429L19.976 11.7789C20.7013 11.9861 20.7013 13.0139 19.976 13.2211L12.8242 15.2645C12.2855 15.4184 11.7145 15.4184 11.1758 15.2645L4.024 13.2211C3.29872 13.0139 3.29872 11.9861 4.024 11.7789L11.25 9.71429V6.5H9ZM6.7493 15.5L4.02345 16.2788C3.29817 16.486 3.29817 17.5139 4.02345 17.7211L11.1753 19.7645C11.714 19.9184 12.285 19.9184 12.8236 19.7645L19.9755 17.7211C20.7007 17.5139 20.7007 16.486 19.9755 16.2788L17.2493 15.4999L12.8233 16.7645C12.2847 16.9184 11.7137 16.9184 11.175 16.7645L6.7493 15.5Z"
-              fill="currentColor"
-            />
-          </svg>
-        </IconButton>
-        <IconButton onClick={moveToBack}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path
-              fillRule="evenodd"
-              clipRule="evenodd"
-              d="M11.1758 4.23547L4.024 6.27885C3.29872 6.48607 3.29872 7.51391 4.024 7.72114L11.1758 9.76452C11.7145 9.91842 12.2855 9.91842 12.8242 9.76452L19.976 7.72114C20.7013 7.51391 20.7013 6.48607 19.976 6.27885L12.8242 4.23547C12.2855 4.08156 11.7145 4.08156 11.1758 4.23547ZM4.02345 10.7788L6.7493 10L11.9992 11.5L17.2493 9.99992L19.9755 10.7788C20.7007 10.986 20.7007 12.0139 19.9755 12.2211L12.8236 14.2645C12.7991 14.2715 12.7746 14.2782 12.75 14.2845V17.5H15L12 22L9 17.5H11.25V14.2848C11.225 14.2783 11.2001 14.2716 11.1753 14.2645L4.02345 12.2211C3.29817 12.0139 3.29817 10.986 4.02345 10.7788Z"
-              fill="currentColor"
-            />
-          </svg>
-        </IconButton>
-      </div>
-      <div className={styles.selection_inspector_delete}>
-        <IconButton onClick={deleteItems}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M7.5 9H16.5V18C16.5 18.8284 15.8284 19.5 15 19.5H9C8.17157 19.5 7.5 18.8284 7.5 18V9Z"
-              fill="currentColor"
-            />
-            <path
-              d="M6 6.75C6 6.33579 6.33579 6 6.75 6H8.37868C8.7765 6 9.15804 5.84196 9.43934 5.56066L10.0607 4.93934C10.342 4.65804 10.7235 4.5 11.1213 4.5H12.8787C13.2765 4.5 13.658 4.65804 13.9393 4.93934L14.5607 5.56066C14.842 5.84196 15.2235 6 15.6213 6H17.25C17.6642 6 18 6.33579 18 6.75V7.5H6V6.75Z"
-              fill="currentColor"
-            />
-          </svg>
-        </IconButton>
-      </div>
-    </div>
-  );
-}
-
 const COLORS = ["#DC2626", "#D97706", "#059669", "#7C3AED", "#DB2777"];
 
-const MultiplayerGuides = React.memo(
-  ({ layers }: { layers: Array<LiveObject<Layer>> }) => {
-    const others = useOthers<Presence>();
+const MultiplayerGuides = React.memo(() => {
+  // TODO: Expose a hook to observe only one key of the others presence to improve performance
+  // For example, selection should not be re-render if only a cursor move
+  const others = useOthers<Presence>();
 
-    return (
-      <>
-        {others.map((user) => {
-          if (user.presence?.cursor) {
+  return (
+    <>
+      {others.map((user) => {
+        if (user.presence?.cursor) {
+          return (
+            <path
+              key={`cursor-${user.connectionId}`}
+              style={{
+                transition: "transform 0.5s cubic-bezier(.17,.93,.38,1)",
+                transform: `translateX(${user.presence.cursor.x}px) translateY(${user.presence.cursor.y}px)`,
+              }}
+              d="M5.65376 12.3673H5.46026L5.31717 12.4976L0.500002 16.8829L0.500002 1.19841L11.7841 12.3673H5.65376Z"
+              fill={COLORS[user.connectionId % COLORS.length]}
+            />
+          );
+        }
+        return null;
+      })}
+      {/* TODO: Find a better way to render multiplayer selection */}
+      {/* {others.map((user) => {
+        if (user.presence?.selection) {
+          const bBox = boundingBox(layers, user.presence.selection);
+          if (bBox) {
             return (
-              <path
-                key={`cursor-${user.connectionId}`}
+              <rect
+                key={`selection-${user.connectionId}`}
                 style={{
-                  transition: "transform 0.5s cubic-bezier(.17,.93,.38,1)",
-                  transform: `translateX(${user.presence.cursor.x}px) translateY(${user.presence.cursor.y}px)`,
+                  transform: `translate(${bBox.x}px, ${bBox.y}px)`,
                 }}
-                d="M5.65376 12.3673H5.46026L5.31717 12.4976L0.500002 16.8829L0.500002 1.19841L11.7841 12.3673H5.65376Z"
-                fill={COLORS[user.connectionId % COLORS.length]}
+                x={0}
+                y={0}
+                width={bBox.width}
+                height={bBox.height}
+                fill="transparent"
+                stroke={COLORS[user.connectionId % COLORS.length]}
+                strokeWidth="1"
               />
             );
           }
-          return null;
-        })}
-        {others.map((user) => {
-          if (user.presence?.selection) {
-            const bBox = boundingBox(layers, user.presence.selection);
-            if (bBox) {
-              return (
-                <rect
-                  key={`selection-${user.connectionId}`}
-                  style={{
-                    transform: `translate(${bBox.x}px, ${bBox.y}px)`,
-                  }}
-                  x={0}
-                  y={0}
-                  width={bBox.width}
-                  height={bBox.height}
-                  fill="transparent"
-                  stroke={COLORS[user.connectionId % COLORS.length]}
-                  strokeWidth="1"
-                />
-              );
-            }
-          }
-          return null;
-        })}
-        {others.map((user) => {
-          if (user.presence?.penPoints) {
-            return (
-              <path
-                key={`pencil-${user.connectionId}`}
-                d={getSvgPathFromStroke(
-                  getStroke(user.presence.penPoints, {
-                    size: 16,
-                    thinning: 0.5,
-                    smoothing: 0.5,
-                    streamline: 0.5,
-                  })
-                )}
-                fill={
-                  user.presence.penColor
-                    ? colorToCss(user.presence.penColor)
-                    : undefined
-                }
-              />
-            );
-          }
-          return null;
-        })}
-      </>
-    );
-  }
-);
-
-function penPointsToPathLayer(points: number[][], color: Color): PathLayer {
-  if (points.length < 2) {
-    throw new Error("Can't transform points with less than 2 points");
-  }
-
-  let left = Number.POSITIVE_INFINITY;
-  let top = Number.POSITIVE_INFINITY;
-  let right = Number.NEGATIVE_INFINITY;
-  let bottom = Number.NEGATIVE_INFINITY;
-
-  for (const point of points) {
-    const [x, y] = point;
-    if (left > x) {
-      left = x;
-    }
-    if (top > y) {
-      top = y;
-    }
-    if (right < x) {
-      right = x;
-    }
-    if (bottom < y) {
-      bottom = y;
-    }
-  }
-
-  return {
-    id: nanoid(),
-    type: LayerType.Path,
-    x: left,
-    y: top,
-    width: right - left,
-    height: bottom - top,
-    fill: color,
-    points: points.map(([x, y, pressure]) => [x - left, y - top, pressure]),
-  };
-}
-
-function pointerEventToCanvasPoint(
-  e: React.PointerEvent,
-  camera: Camera
-): Point {
-  return {
-    x: Math.round(e.clientX) - camera.x,
-    y: Math.round(e.clientY) - camera.y,
-  };
-}
+        }
+        return null;
+      })} */}
+      {others.map((user) => {
+        if (user.presence?.penPoints) {
+          return (
+            <path
+              key={`pencil-${user.connectionId}`}
+              d={getSvgPathFromStroke(
+                getStroke(user.presence.penPoints, {
+                  size: 16,
+                  thinning: 0.5,
+                  smoothing: 0.5,
+                  streamline: 0.5,
+                })
+              )}
+              fill={
+                user.presence.penColor
+                  ? colorToCss(user.presence.penColor)
+                  : undefined
+              }
+            />
+          );
+        }
+        return null;
+      })}
+    </>
+  );
+});

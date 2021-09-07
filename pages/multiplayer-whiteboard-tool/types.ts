@@ -18,7 +18,6 @@ export type Camera = {
 export type Layer = RectangleLayer | EllipseLayer | PathLayer;
 
 export type RectangleLayer = {
-  id: string;
   type: LayerType.Rectangle;
   x: number;
   y: number;
@@ -28,7 +27,6 @@ export type RectangleLayer = {
 };
 
 export type EllipseLayer = {
-  id: string;
   type: LayerType.Ellipse;
   x: number;
   y: number;
@@ -38,7 +36,6 @@ export type EllipseLayer = {
 };
 
 export type PathLayer = {
-  id: string;
   type: LayerType.Path;
   x: number;
   y: number;
