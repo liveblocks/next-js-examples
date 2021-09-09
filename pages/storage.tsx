@@ -49,9 +49,7 @@ function StorageDemo() {
             <div style={{ flexGrow: 1 }}>{todo.text}</div>
             <button
               className="focus:outline-none"
-              onClick={() => {
-                todos.delete(index);
-              }}
+              onClick={() => todos.delete(index)}
             >
               ✕
             </button>

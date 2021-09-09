@@ -101,6 +101,11 @@ export default function Home({
                     href="/avatars"
                     description="Presence"
                   />
+                  <ListItem
+                    label="Whiteboard"
+                    href="/multiplayer-whiteboard-tool"
+                    description="Presence + Storage"
+                  />
                 </ul>
               </div>
             </div>

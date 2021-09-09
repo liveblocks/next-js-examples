@@ -5,6 +5,7 @@ import { Color } from "./types";
 import styles from "./SelectionTools.module.css";
 
 type SelectionToolsProps = {
+  isAnimated: boolean;
   x: number;
   y: number;
   setFill: (color: Color) => void;
@@ -14,6 +15,7 @@ type SelectionToolsProps = {
 };
 
 export default function SelectionTools({
+  isAnimated,
   x,
   y,
   setFill,
@@ -25,6 +27,7 @@ export default function SelectionTools({
     <div
       className={styles.selection_inspector}
       style={{
+        transition: isAnimated ? "all 0.1s ease" : "",
         transform: `translate(calc(${x}px - 50%), calc(${y - 16}px - 100%))`,
       }}
     >

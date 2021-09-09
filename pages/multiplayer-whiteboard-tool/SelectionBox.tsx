@@ -8,6 +8,7 @@ type SelectionBoxProps = {
   layers: LiveMap<string, LiveObject<Layer>>;
   bounds: XYWH;
   onResizeHandlePointerDown: (corner: Side, initialBounds: XYWH) => void;
+  isAnimated: boolean;
 };
 
 const HANDLE_WIDTH = 8;
@@ -18,6 +19,7 @@ const SelectionBox = memo(
     bounds,
     onResizeHandlePointerDown,
     selection,
+    isAnimated,
   }: SelectionBoxProps) => {
     const isShowingHandles =
       selection.length === 1 &&
@@ -29,6 +31,7 @@ const SelectionBox = memo(
         <rect
           className={styles.selection}
           style={{
+            transition: isAnimated ? "all 0.1s ease" : "",
             transform: `translate(${bounds.x}px, ${bounds.y}px)`,
           }}
           x={0}
@@ -46,6 +49,7 @@ const SelectionBox = memo(
                 cursor: "nwse-resize",
                 width: `${HANDLE_WIDTH}px`,
                 height: `${HANDLE_WIDTH}px`,
+                transition: isAnimated ? "all 0.1s ease" : "",
                 transform: `translate(${bounds.x - HANDLE_WIDTH / 2}px, ${
                   bounds.y - HANDLE_WIDTH / 2
                 }px)`,
@@ -63,6 +67,7 @@ const SelectionBox = memo(
                 cursor: "ns-resize",
                 width: `${HANDLE_WIDTH}px`,
                 height: `${HANDLE_WIDTH}px`,
+                transition: isAnimated ? "all 0.1s ease" : "",
                 transform: `translate(${
                   bounds.x + bounds.width / 2 - HANDLE_WIDTH / 2
                 }px, ${bounds.y - HANDLE_WIDTH / 2}px)`,
@@ -80,6 +85,7 @@ const SelectionBox = memo(
                 cursor: "nesw-resize",
                 width: `${HANDLE_WIDTH}px`,
                 height: `${HANDLE_WIDTH}px`,
+                transition: isAnimated ? "all 0.1s ease" : "",
                 transform: `translate(${
                   bounds.x - HANDLE_WIDTH / 2 + bounds.width
                 }px, ${bounds.y - HANDLE_WIDTH / 2}px)`,
@@ -97,6 +103,7 @@ const SelectionBox = memo(
                 cursor: "ew-resize",
                 width: `${HANDLE_WIDTH}px`,
                 height: `${HANDLE_WIDTH}px`,
+                transition: isAnimated ? "all 0.1s ease" : "",
                 transform: `translate(${
                   bounds.x - HANDLE_WIDTH / 2 + bounds.width
                 }px, ${bounds.y + bounds.height / 2 - HANDLE_WIDTH / 2}px)`,
@@ -114,6 +121,7 @@ const SelectionBox = memo(
                 cursor: "nwse-resize",
                 width: `${HANDLE_WIDTH}px`,
                 height: `${HANDLE_WIDTH}px`,
+                transition: isAnimated ? "all 0.1s ease" : "",
                 transform: `translate(${
                   bounds.x - HANDLE_WIDTH / 2 + bounds.width
                 }px, ${bounds.y - HANDLE_WIDTH / 2 + bounds.height}px)`,
@@ -131,6 +139,7 @@ const SelectionBox = memo(
                 cursor: "ns-resize",
                 width: `${HANDLE_WIDTH}px`,
                 height: `${HANDLE_WIDTH}px`,
+                transition: isAnimated ? "all 0.1s ease" : "",
                 transform: `translate(${
                   bounds.x + bounds.width / 2 - HANDLE_WIDTH / 2
                 }px, ${bounds.y - HANDLE_WIDTH / 2 + bounds.height}px)`,
@@ -148,6 +157,7 @@ const SelectionBox = memo(
                 cursor: "nesw-resize",
                 width: `${HANDLE_WIDTH}px`,
                 height: `${HANDLE_WIDTH}px`,
+                transition: isAnimated ? "all 0.1s ease" : "",
                 transform: `translate(${bounds.x - HANDLE_WIDTH / 2}px, ${
                   bounds.y - HANDLE_WIDTH / 2 + bounds.height
                 }px)`,
@@ -165,6 +175,7 @@ const SelectionBox = memo(
                 cursor: "ew-resize",
                 width: `${HANDLE_WIDTH}px`,
                 height: `${HANDLE_WIDTH}px`,
+                transition: isAnimated ? "all 0.1s ease" : "",
                 transform: `translate(${bounds.x - HANDLE_WIDTH / 2}px, ${
                   bounds.y - HANDLE_WIDTH / 2 + bounds.height / 2
                 }px)`,

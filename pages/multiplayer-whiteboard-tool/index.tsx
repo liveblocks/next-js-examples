@@ -22,7 +22,6 @@ import {
 import styles from "./index.module.css";
 import getStroke from "perfect-freehand";
 import {
-  boundingBox,
   colorToCss,
   findIntersectingLayersWithRectangle,
   getLayers,
@@ -58,9 +57,9 @@ export default function Room() {
 }
 
 function WhiteboardTool() {
-  // layers is a map that contains all the shape drawn on the canvas
+  // layers is a LiveMap that contains all the shapes drawn on the canvas
   const layers = useMap<string, LiveObject<Layer>>("layers");
-  // layerIds is list of all the layer ids ordered by their z-index
+  // layerIds is LiveList of all the layer ids ordered by their z-index
   const layerIds = useList<string>("layerIds");
 
   if (layerIds == null || layers == null) {
@@ -195,6 +194,10 @@ function Canvas({
       <div className={styles.canvas}>
         {selectionBounds && (
           <SelectionTools
+            isAnimated={
+              canvasState.mode !== CanvasMode.Translating &&
+              canvasState.mode !== CanvasMode.Resizing
+            }
             x={selectionBounds.width / 2 + selectionBounds.x + camera.x}
             y={selectionBounds.y + camera.y}
             setFill={setFill}
@@ -378,6 +381,10 @@ function Canvas({
                 bounds={selectionBounds}
                 layers={layers}
                 onResizeHandlePointerDown={onResizeHandlePointerDown}
+                isAnimated={
+                  canvasState.mode !== CanvasMode.Translating &&
+                  canvasState.mode !== CanvasMode.Resizing
+                }
               />
             )}
             {canvasState.mode === CanvasMode.SelectionNet &&
@@ -499,7 +506,7 @@ const COLORS = ["#DC2626", "#D97706", "#059669", "#7C3AED", "#DB2777"];
 
 const MultiplayerGuides = React.memo(() => {
   // TODO: Expose a hook to observe only one key of the others presence to improve performance
-  // For example, selection should not be re-render if only a cursor move
+  // For example, multiplayer selection should not be re-render if only a cursor move
   const others = useOthers<Presence>();
 
   return (
