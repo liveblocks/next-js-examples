@@ -12,6 +12,7 @@ type Props = {
   onLayerPointerDown: (e: React.PointerEvent, layerId: string) => void;
 };
 
+// We can use react memo because "layer" is a LiveObject and it's mutable. This component will only be re-rendered if the layer is updated.
 const LayerComponent = memo(
   ({ layer, mode, onLayerPointerDown, id }: Props) => {
     const [layerData, setLayerData] = useState(layer.toObject());

@@ -99,7 +99,7 @@ function Canvas({
 
   const deleteItems = useCallback(() => {
     for (const id of selection) {
-      const index = layerIds.toArray().findIndex((layerId) => layerId === id);
+      const index = layerIds.indexOf(id);
       layers.delete(id);
       if (index !== -1) {
         layerIds.delete(index);
@@ -359,7 +359,7 @@ function Canvas({
               transform: `translate(${camera.x}px, ${camera.y}px)`,
             }}
           >
-            {layerIds.toArray().map((layerId) => {
+            {layerIds.map((layerId) => {
               const layer = layers.get(layerId);
               if (layer == null) {
                 return null;

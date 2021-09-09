@@ -117,7 +117,7 @@ export function findIntersectingLayersWithRectangle(
 
   const ids = [];
 
-  for (const layerId of layerIds.toArray()) {
+  for (const layerId of layerIds) {
     const layer = layers.get(layerId);
     if (layer == null) {
       continue;

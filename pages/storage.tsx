@@ -40,7 +40,7 @@ function StorageDemo() {
           }
         }}
       ></input>
-      {todos.toArray().map((todo, index) => {
+      {todos.map((todo, index) => {
         return (
           <div
             className="px-3.5 py-2 flex justify-between items-center"

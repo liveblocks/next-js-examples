@@ -16,6 +16,8 @@ export function useSelectionBounds(
       setBounds(boundingBox(layers, selection));
     }
 
+    // We need to subscribe to the layers map updates and to the updates on the layers themselves.
+    // If User A deletes or modified a layer that is currently selected by UserB, the selection bounds needs to be refreshed.
     layers.subscribeDeep(onChange);
 
     return () => {
