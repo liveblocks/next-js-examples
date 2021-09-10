@@ -70,8 +70,8 @@ export default function Home({
                     description="Presence"
                   />
                   <ListItem
-                    label="Storage demo"
-                    href="/storage"
+                    label="Todo list demo"
+                    href="/todo-list"
                     description="Storage"
                   />
                 </ul>

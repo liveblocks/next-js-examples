@@ -34,7 +34,7 @@ import SelectionBox from "./SelectionBox";
 import { nanoid } from "nanoid";
 import LayerComponent from "./LayerComponent";
 import SelectionTools from "./SelectionTools";
-import LoadingIndicator from "./LoadingIndicator";
+import LoadingIndicator from "../../components/LoadingIndicator";
 import { useSelectionBounds } from "./hooks";
 
 const MAX_LAYERS = 100;

@@ -1,5 +1,7 @@
 import { RoomProvider, useList } from "@liveblocks/react";
 import React, { useState } from "react";
+import LoadingIndicator from "../../components/LoadingIndicator";
+import styles from "./index.module.css";
 
 type Todo = {
   text: string;
@@ -18,17 +20,13 @@ function StorageDemo() {
   const [text, setText] = useState("");
 
   if (todos == null) {
-    return (
-      <div className="container max-w-md mx-auto min-h-screen flex items-center justify-center">
-        Loading…
-      </div>
-    );
+    return <LoadingIndicator />;
   }
 
   return (
-    <div className="container max-w-md mx-auto">
+    <div className={styles.container}>
       <input
-        className="w-full bg-white px-3.5 py-2 shadow-sm hover:shadow focus:shadow focus:outline-none rounded-lg mt-12 mb-2"
+        className={styles.input}
         type="text"
         placeholder="What needs to be done?"
         value={text}
@@ -42,17 +40,9 @@ function StorageDemo() {
       ></input>
       {todos.map((todo, index) => {
         return (
-          <div
-            className="px-3.5 py-2 flex justify-between items-center"
-            key={index}
-          >
-            <div style={{ flexGrow: 1 }}>{todo.text}</div>
-            <button
-              className="focus:outline-none"
-              onClick={() => todos.delete(index)}
-            >
-              ✕
-            </button>
+          <div className={styles.todo_container} key={index}>
+            <div className={styles.todo}>{todo.text}</div>
+            <button onClick={() => todos.delete(index)}>✕</button>
           </div>
         );
       })}
