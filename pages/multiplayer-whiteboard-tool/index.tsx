@@ -6,7 +6,7 @@ import {
   useMap,
 } from "@liveblocks/react";
 import { LiveList, LiveMap, LiveObject } from "@liveblocks/client";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import IconButton from "./IconButton";
 import {
   Color,
@@ -188,6 +188,27 @@ function Canvas({
     },
     []
   );
+
+  // TODO: Expose a hook to observe only one key of the others presence to improve performance
+  // For example, multiplayer selection should not be re-render if only a cursor move
+  const others = useOthers<Presence>();
+
+  const layerIdsToColorSelection = useMemo(() => {
+    const layerIdsToColorSelection: Record<string, string> = {};
+    for (const user of others.toArray()) {
+      const selection = user.presence?.selection;
+      if (selection == null || selection.length === 0) {
+        continue;
+      }
+
+      for (const id of selection) {
+        layerIdsToColorSelection[id] =
+          COLORS[user.connectionId % COLORS.length];
+      }
+    }
+
+    return layerIdsToColorSelection;
+  }, [others]);
 
   return (
     <>
@@ -372,6 +393,7 @@ function Canvas({
                   mode={canvasState.mode}
                   onLayerPointerDown={onLayerPointerDown}
                   layer={layer}
+                  selectionColor={layerIdsToColorSelection[layerId]}
                 />
               );
             })}
@@ -505,10 +527,7 @@ function Canvas({
 const COLORS = ["#DC2626", "#D97706", "#059669", "#7C3AED", "#DB2777"];
 
 const MultiplayerGuides = React.memo(() => {
-  // TODO: Expose a hook to observe only one key of the others presence to improve performance
-  // For example, multiplayer selection should not be re-render if only a cursor move
   const others = useOthers<Presence>();
-
   return (
     <>
       {others.map((user) => {
@@ -527,30 +546,6 @@ const MultiplayerGuides = React.memo(() => {
         }
         return null;
       })}
-      {/* TODO: Find a better way to render multiplayer selection */}
-      {/* {others.map((user) => {
-        if (user.presence?.selection) {
-          const bBox = boundingBox(layers, user.presence.selection);
-          if (bBox) {
-            return (
-              <rect
-                key={`selection-${user.connectionId}`}
-                style={{
-                  transform: `translate(${bBox.x}px, ${bBox.y}px)`,
-                }}
-                x={0}
-                y={0}
-                width={bBox.width}
-                height={bBox.height}
-                fill="transparent"
-                stroke={COLORS[user.connectionId % COLORS.length]}
-                strokeWidth="1"
-              />
-            );
-          }
-        }
-        return null;
-      })} */}
       {others.map((user) => {
         if (user.presence?.penPoints) {
           return (

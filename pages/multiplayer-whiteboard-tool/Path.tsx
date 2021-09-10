@@ -7,9 +7,16 @@ type Props = {
   layer: PathLayer;
   isAnimated: boolean;
   onPointerDown: (e: React.PointerEvent, id: string) => void;
+  selectionColor?: string;
 };
 
-export default function Path({ layer, isAnimated, onPointerDown, id }: Props) {
+export default function Path({
+  layer,
+  isAnimated,
+  onPointerDown,
+  id,
+  selectionColor,
+}: Props) {
   return (
     <path
       key={id}
@@ -29,6 +36,8 @@ export default function Path({ layer, isAnimated, onPointerDown, id }: Props) {
       x={0}
       y={0}
       fill={layer.fill ? colorToCss(layer.fill) : "#CCC"}
+      stroke={selectionColor}
+      strokeWidth={1}
     />
   );
 }

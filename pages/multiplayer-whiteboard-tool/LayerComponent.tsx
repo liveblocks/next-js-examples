@@ -10,11 +10,12 @@ type Props = {
   layer: LiveObject<Layer>;
   mode: CanvasMode;
   onLayerPointerDown: (e: React.PointerEvent, layerId: string) => void;
+  selectionColor?: string;
 };
 
 // We can use react memo because "layer" is a LiveObject and it's mutable. This component will only be re-rendered if the layer is updated.
 const LayerComponent = memo(
-  ({ layer, mode, onLayerPointerDown, id }: Props) => {
+  ({ layer, mode, onLayerPointerDown, id, selectionColor }: Props) => {
     const [layerData, setLayerData] = useState(layer.toObject());
 
     // Layer is a nested LiveObject inside a LiveMap, so we need to subscribe to changes made to a specific layer
@@ -39,6 +40,7 @@ const LayerComponent = memo(
             layer={layerData}
             onPointerDown={onLayerPointerDown}
             isAnimated={isAnimated}
+            selectionColor={selectionColor}
           />
         );
       case LayerType.Path:
@@ -48,6 +50,7 @@ const LayerComponent = memo(
             layer={layerData}
             onPointerDown={onLayerPointerDown}
             isAnimated={isAnimated}
+            selectionColor={selectionColor}
           />
         );
       case LayerType.Rectangle:
@@ -57,6 +60,7 @@ const LayerComponent = memo(
             layer={layerData}
             onPointerDown={onLayerPointerDown}
             isAnimated={isAnimated}
+            selectionColor={selectionColor}
           />
         );
       default:

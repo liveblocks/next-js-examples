@@ -6,6 +6,7 @@ type Props = {
   layer: EllipseLayer;
   isAnimated: boolean;
   onPointerDown: (e: React.PointerEvent, id: string) => void;
+  selectionColor?: string;
 };
 
 export default function Ellipse({
@@ -13,6 +14,7 @@ export default function Ellipse({
   isAnimated,
   onPointerDown,
   id,
+  selectionColor,
 }: Props) {
   return (
     <ellipse
@@ -26,6 +28,8 @@ export default function Ellipse({
       rx={layer.width / 2}
       ry={layer.height / 2}
       fill={layer.fill ? colorToCss(layer.fill) : "#CCC"}
+      stroke={selectionColor || "transparent"}
+      strokeWidth="1"
     />
   );
 }

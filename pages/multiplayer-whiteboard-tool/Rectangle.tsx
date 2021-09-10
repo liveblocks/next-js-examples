@@ -6,6 +6,7 @@ type Props = {
   layer: RectangleLayer;
   isAnimated: boolean;
   onPointerDown: (e: React.PointerEvent, id: string) => void;
+  selectionColor?: string;
 };
 
 export default function Rectangle({
@@ -13,6 +14,7 @@ export default function Rectangle({
   isAnimated,
   onPointerDown,
   id,
+  selectionColor,
 }: Props) {
   const { x, y, width, height, fill } = layer;
 
@@ -28,6 +30,8 @@ export default function Rectangle({
       width={width}
       height={height}
       fill={fill ? colorToCss(fill) : "#CCC"}
+      strokeWidth={1}
+      stroke={selectionColor || "transparent"}
     />
   );
 }
