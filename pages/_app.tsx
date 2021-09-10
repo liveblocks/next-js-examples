@@ -6,7 +6,6 @@ import "../components/globals.css";
 
 const client = createClient({
   authEndpoint: "/api/auth",
-  liveblocksServer: "wss://staging.liveblocks.workers.dev/v2",
 });
 
 function MyApp({ Component, pageProps }: AppProps) {
