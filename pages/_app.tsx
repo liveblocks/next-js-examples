@@ -4,9 +4,16 @@ import { AppProps } from "next/app";
 import "tailwindcss/tailwind.css";
 import "../components/globals.css";
 
+// No auth endpoint needed, use only for test or on public website:
 const client = createClient({
-  authEndpoint: "/api/auth",
+  publicApiKey: "pak_XXXXXXXX",
 });
+
+
+// Or, set the auth endpoint that you have set up:
+// const client = createClient({
+//   authEndpoint: "/api/auth",
+// });
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
