@@ -117,8 +117,17 @@ function LiveCursorsChatReactions() {
 
     window.addEventListener("keyup", onKeyUp);
 
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "/") {
+        e.preventDefault();
+      }
+    }
+
+    window.addEventListener("keydown", onKeyDown);
+
     return () => {
       window.removeEventListener("keyup", onKeyUp);
+      window.removeEventListener("keydown", onKeyDown);
     };
   }, [updateMyPresence]);
 

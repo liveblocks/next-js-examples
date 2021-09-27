@@ -70,8 +70,8 @@ export default function Home({
                     description="Presence"
                   />
                   <ListItem
-                    label="Storage demo"
-                    href="/storage"
+                    label="Todo list demo"
+                    href="/todo-list"
                     description="Storage"
                   />
                 </ul>
@@ -100,6 +100,11 @@ export default function Home({
                     label="Live Avatars"
                     href="/avatars"
                     description="Presence"
+                  />
+                  <ListItem
+                    label="Whiteboard"
+                    href="/multiplayer-whiteboard-tool"
+                    description="Presence + Storage"
                   />
                 </ul>
               </div>
