@@ -8,7 +8,7 @@ export async function getStaticProps() {
   return {
     props: {
       isRunningOnCodeSandbox: process.env.CODESANDBOX_SSE != null,
-      hasSetupLiveblocksKey: process.env.LIVEBLOCKS_SECRET_KEY != null,
+      hasSetupLiveblocksKey: process.env.LIVEBLOCKS_SECRET_KEY != null || process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY,
     },
   };
 }
