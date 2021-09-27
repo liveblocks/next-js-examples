@@ -22,8 +22,8 @@ export default function Room() {
       <ExampleInfo
         title="Basic Live Cursors Example"
         description="Open this page in multiple windows to see the live cursors."
-        githubHref="https://github.com/liveblocks/next-js-examples/blob/main/pages/presence.tsx"
-        codeSandboxHref="https://codesandbox.io/s/github/liveblocks/next-js-examples?file=/pages/presence.tsx"
+        githubHref="https://github.com/liveblocks/next-js-examples/blob/main/pages/live-cursors-basic.js"
+        codeSandboxHref="https://codesandbox.io/s/github/liveblocks/next-js-examples?file=/pages/live-cursors-basic.js"
       />
     </RoomProvider>
   );
