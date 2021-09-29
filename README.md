@@ -6,7 +6,12 @@
 
 # Deprecated
 
-This repository is deprecated, please use [https://github.com/liveblocks/liveblocks/tree/main/examples/nextjs-live-avatars](https://github.com/liveblocks/liveblocks/tree/main/examples/nextjs-live-avatars) for Next.js examples.
+This repository is deprecated, for Next.js examples please use:
+
+- [https://github.com/liveblocks/liveblocks/tree/main/examples/nextjs-live-avatars](https://github.com/liveblocks/liveblocks/tree/main/examples/nextjs-live-avatars)
+- [https://github.com/liveblocks/liveblocks/tree/main/examples/nextjs-todo-list](https://github.com/liveblocks/liveblocks/tree/main/examples/nextjs-todo-list)
+- [https://github.com/liveblocks/liveblocks/tree/main/examples/nextjs-whiteboard](https://github.com/liveblocks/liveblocks/tree/main/examples/nextjs-whiteboard)
+- [https://github.com/liveblocks/liveblocks/tree/main/examples/nextjs-live-cursors](https://github.com/liveblocks/liveblocks/tree/main/examples/nextjs-live-cursors)
 
 ## [Liveblocks](https://liveblocks.io) × [Next.js](https://nextjs.org/).
 
