@@ -4,7 +4,11 @@
   </a>
 </p>
 
-# [Liveblocks](https://liveblocks.io) × [Next.js](https://nextjs.org/).
+# Deprecated
+
+This repository is deprecated, please use [https://github.com/liveblocks/liveblocks/tree/main/examples/nextjs-live-avatars](https://github.com/liveblocks/liveblocks/tree/main/examples/nextjs-live-avatars) for Next.js examples.
+
+## [Liveblocks](https://liveblocks.io) × [Next.js](https://nextjs.org/).
 
 This repo shows how to use Liveblocks with [Next.js](https://nextjs.org/).
 
